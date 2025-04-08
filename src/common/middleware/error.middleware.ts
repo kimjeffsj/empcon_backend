@@ -180,5 +180,6 @@ export const errorHandler = (
     }
   }
 
-  return res.status(statusCode).json(responseBody);
+  res.status(statusCode).json(responseBody);
+  return;
 };

@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +8,265 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// User related models
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  password           String
+  firstName          String
+  lastName           String
+  dateOfBirth        DateTime?
+  hireDate           DateTime
+  terminationDate    DateTime?
+  role               Role                @default(EMPLOYEE)
+  profile            UserProfile?
+  department         Department?         @relation(fields: [departmentId], references: [id])
+  departmentId       String?
+  position           Position?           @relation(fields: [positionId], references: [id])
+  positionId         String?
+  payRate            Float? // hourly wage
+  payPeriodType      PayPeriodType? // pay period type
+  overtimeEnabled    Boolean             @default(true) // whether overtime premium applies
+  schedules          Schedule[]
+  timeClocks         TimeClock[]
+  leaveRequests      LeaveRequest[]
+  adjustmentRequests AdjustmentRequest[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+model UserProfile {
+  id                    String  @id @default(uuid())
+  user                  User    @relation(fields: [userId], references: [id])
+  userId                String  @unique
+  address               String?
+  socialInsuranceNumber String?
+  comments              String?
+  emergencyContact      String?
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  ADMIN
+}
+
+model Department {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Position {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Schedule related models
+model Schedule {
+  id                 String              @id @default(uuid())
+  user               User                @relation(fields: [userId], references: [id])
+  userId             String
+  startTime          DateTime
+  endTime            DateTime
+  breakTime          Int                 @default(0) // in minutes
+  scheduleType       ScheduleType        @default(REGULAR)
+  isStatutoryHoliday Boolean             @default(false) // whether it's a statutory holiday
+  notes              String?
+  timeClocks         TimeClock[]
+  adjustmentRequests AdjustmentRequest[]
+  createdBy          String // manager ID who created
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+enum ScheduleType {
+  REGULAR
+  OVERTIME
+  HOLIDAY
+}
+
+// Adjustment request model
+model AdjustmentRequest {
+  id                 String        @id @default(uuid())
+  user               User          @relation(fields: [userId], references: [id])
+  userId             String
+  schedule           Schedule?     @relation(fields: [scheduleId], references: [id])
+  scheduleId         String?
+  requestType        RequestType
+  reason             String
+  status             RequestStatus @default(PENDING)
+  // Adjustment request related fields
+  requestedStartTime DateTime?
+  requestedEndTime   DateTime?
+  requestedBreakTime Int?
+  // Approval/rejection related
+  reviewedBy         String? // manager ID who reviewed
+  reviewNotes        String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+enum RequestType {
+  SCHEDULE_CHANGE
+  TIME_OFF
+  MONTHLY_LEAVE
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// Time clock related models
+model TimeClock {
+  id           String    @id @default(uuid())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  clockInTime  DateTime
+  clockOutTime DateTime?
+  totalMinutes Int?
+  schedule     Schedule? @relation(fields: [scheduleId], references: [id])
+  scheduleId   String?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// Payroll related models
+model PayPeriod {
+  id           String           @id @default(uuid())
+  startDate    DateTime
+  endDate      DateTime
+  type         PayPeriodType
+  status       PayPeriodStatus  @default(DRAFT)
+  calculations PayCalculation[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+enum PayPeriodType {
+  SEMI_MONTHLY
+  BI_WEEKLY
+  MONTHLY
+}
+
+enum PayPeriodStatus {
+  DRAFT
+  PROCESSING
+  COMPLETED
+  PAID
+}
+
+model PayCalculation {
+  id            String          @id @default(uuid())
+  payPeriod     PayPeriod       @relation(fields: [payPeriodId], references: [id])
+  payPeriodId   String
+  userId        String // employee ID
+  regularHours  Float
+  overtimeHours Float
+  holidayHours  Float
+  grossPay      Float
+  adjustments   PayAdjustment[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model PayAdjustment {
+  id               String         @id @default(uuid())
+  payCalculation   PayCalculation @relation(fields: [payCalculationId], references: [id])
+  payCalculationId String
+  amount           Float
+  reason           String
+  createdBy        String // user ID who created
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+// Leave related models
+model LeaveType {
+  id          String         @id @default(uuid())
+  name        String
+  description String?
+  paidLeave   Boolean        @default(true)
+  requests    LeaveRequest[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model LeaveBalance {
+  id          String   @id @default(uuid())
+  userId      String // employee ID
+  leaveTypeId String // leave type ID
+  balanceDays Float // remaining days
+  year        Int // year
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LeaveRequest {
+  id          String             @id @default(uuid())
+  user        User               @relation(fields: [userId], references: [id])
+  userId      String
+  leaveType   LeaveType?         @relation(fields: [leaveTypeId], references: [id])
+  leaveTypeId String?
+  startDate   DateTime
+  endDate     DateTime
+  totalDays   Float
+  status      LeaveRequestStatus @default(PENDING)
+  notes       String?
+  approvedBy  String? // manager ID who approved
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+enum LeaveRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// Statutory holiday model
+model StatutoryHoliday {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime
+  year      Int
+  province  String // province code (e.g. BC)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Notification related models
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String // recipient ID
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  type      NotificationType
+  relatedId String? // related item ID (requests, schedules, etc.)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum NotificationType {
+  SCHEDULE_CHANGE
+  REQUEST_UPDATE
+  LEAVE_UPDATE
+  PAYROLL
+  GENERAL
 }

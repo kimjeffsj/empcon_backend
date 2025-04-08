@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { LoginDto } from "./dto/login.dto";
 import {
@@ -10,6 +10,7 @@ import { appConfig } from "../../config/app.config";
 import { ApiError } from "../../common/middleware/error.middleware";
 import { excludePassword } from "@/common/utils/helpers.utils";
 import { logger } from "@/common/utils/logger.utils";
+import { StringValue } from "ms";
 
 export class AuthService {
   /**
@@ -130,9 +131,8 @@ export class AuthService {
    * Generate token
    */
   private generateToken(userId: string, role: string) {
-    // TODO: sign No overload matches error
     return jwt.sign({ userId, role }, appConfig.jwt.secret, {
-      expiresIn: appConfig.jwt.expiresIn,
+      expiresIn: appConfig.jwt.expiresIn as StringValue,
     });
   }
 
@@ -142,7 +142,7 @@ export class AuthService {
   private generateRefreshToken(userId: string) {
     // TODO: sign No overload matches error
     return jwt.sign({ userId }, appConfig.jwt.refreshSecret, {
-      expiresIn: appConfig.jwt.refreshExpiresIn,
+      expiresIn: appConfig.jwt.refreshExpiresIn as StringValue,
     });
   }
 

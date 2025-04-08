@@ -22,10 +22,11 @@ export class AuthController {
 
       const result = await authService.login({ email, password });
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "Login successful",
         ...result,
       });
+      return;
     } catch (error) {
       next(error);
     }
@@ -41,13 +42,27 @@ export class AuthController {
       if (!refreshToken) {
         throw new UnauthorizedError("Refresh token is required");
       }
-    } catch (error) {}
+
+      const result = await authService.refreshToken(refreshToken);
+
+      res.status(200).json({
+        message: "Token refreshed successfully",
+        ...result,
+      });
+      return;
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
    * Request Password reset
    */
-  async requestPasswordReset(req: Request, res: Response, next: NextFunction) {
+  requestPasswordReset = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const { email } = req.body;
 
@@ -57,17 +72,18 @@ export class AuthController {
 
       const result = await authService.requestPasswordReset({ email });
 
-      return res.status(200).json(result);
+      res.status(200).json(result);
+      return;
     } catch (error) {
       logger.error("Password reset request error: ", error);
       next(error);
     }
-  }
+  };
 
   /**
    * Reset Password
    * */
-  async resetPassword(req: Request, res: Response, next: NextFunction) {
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { token, password } = req.body;
 
@@ -79,11 +95,12 @@ export class AuthController {
 
       const result = await authService.resetPassword({ token, password });
 
-      return res.status(200).json(result);
+      res.status(200).json(result);
+      return;
     } catch (error) {
       next(error);
     }
-  }
+  };
 }
 
 export const authController = new AuthController();

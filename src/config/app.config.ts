@@ -1,3 +1,5 @@
+import { Secret } from "jsonwebtoken";
+
 export const appConfig = {
   nodeEnv: process.env.NODE_ENV || "development",
   isProduction: process.env.NODE_ENV === "production",
@@ -8,7 +10,7 @@ export const appConfig = {
   apiPrefix: "/api",
 
   jwt: {
-    secret: process.env.JWT_SECRET || "your_jwt_secret_key",
+    secret: process.env.JWT_SECRET || ("your_jwt_secret_key" as Secret),
     expiresIn: "15m",
     refreshSecret:
       process.env.JWT_REFRESH_SECRET || "your_jwt_refresh_secret_key",
