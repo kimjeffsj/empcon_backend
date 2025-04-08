@@ -1,6 +1,8 @@
 import { appConfig } from "@/config/app.config";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { UnauthorizedError } from "./error.middleware";
+import { logger } from "../utils/logger.utils";
 
 interface JwtPayload {
   userId: string;
@@ -30,26 +32,34 @@ export const authenticate = (
   const token = authHeader && authHeader?.split(" ")[1];
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Authentication token is required" });
+    return next(new UnauthorizedError("Authentication token is required"));
   }
 
   try {
     const decoded = jwt.verify(token, appConfig.jwt.secret) as JwtPayload;
-  } catch (error) {}
+
+    req.user = {
+      userId: decoded.userId,
+      role: decoded.role,
+    };
+
+    next();
+  } catch (error) {
+    logger.error("JWT verification failed", { error });
+    return next(new UnauthorizedError("Invalid or expired token"));
+  }
 };
 
 export const authorize = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
+      return next(new UnauthorizedError());
     }
 
     if (!roles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Not authorized to access this resource" });
+      return next(
+        new UnauthorizedError("Not authorized to access this resource")
+      );
     }
 
     next();
