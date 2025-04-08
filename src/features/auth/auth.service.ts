@@ -140,7 +140,6 @@ export class AuthService {
    * Generate refresh token
    */
   private generateRefreshToken(userId: string) {
-    // TODO: sign No overload matches error
     return jwt.sign({ userId }, appConfig.jwt.refreshSecret, {
       expiresIn: appConfig.jwt.refreshExpiresIn as StringValue,
     });
@@ -153,7 +152,7 @@ export class AuthService {
     return jwt.sign(
       { userId, purpose: "password-reset" },
       appConfig.jwt.secret,
-      { expiresIn: "1h" }
+      { expiresIn: "10m" }
     );
   }
 }
