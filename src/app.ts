@@ -21,8 +21,6 @@ app.use(cors({ origin: appConfig.cors.origin }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const API_PREFIX = appConfig.apiPrefix;
-
 // Base route
 app.get("/", (req, res) => {
   res.json({
@@ -33,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`/api/auth`, authRoutes);
 
 // 404 Error handler
 app.use(notFoundHandler);

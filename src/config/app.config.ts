@@ -6,11 +6,16 @@ export const appConfig = {
   isDevelopment: process.env.NODE_ENV === "development",
   isTest: process.env.NODE_ENV === "test",
 
-  port: parseInt(process.env.PORT || "3002", 10),
+  port: parseInt(process.env.PORT || "5002", 10),
   apiPrefix: "/api",
 
+  admin: {
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASSWORD,
+  },
+
   jwt: {
-    secret: process.env.JWT_SECRET || ("your_jwt_secret_key" as Secret),
+    secret: process.env.JWT_SECRET || "your_jwt_secret_key",
     expiresIn: "15m",
     refreshSecret:
       process.env.JWT_REFRESH_SECRET || "your_jwt_refresh_secret_key",

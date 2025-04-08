@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .ts",
     "test": "jest",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "keywords": [
     "employee",
