@@ -1,23 +1,4 @@
 /**
- * Utility function to remove password field from data
- */
-export function excludePassword<T extends { password: string }>(
-  user: T
-): Omit<T, "password"> {
-  const { password, ...userWithoutPassword } = user;
-  return userWithoutPassword;
-}
-
-/**
- * Utility function to remove password fields from an array of objects
- */
-export function excludePasswordFromArray<T extends { password: string }>(
-  users: T[]
-): Omit<T, "password">[] {
-  return users.map((user) => excludePassword(user));
-}
-
-/**
  * Date utility functions with date range capabilities
  */
 export const dateUtils = {
