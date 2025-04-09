@@ -63,11 +63,27 @@ export const dateUtils = {
 };
 
 /**
- * Utility function for pagination
+ * Pagination parameters interface
  */
-export function getPaginationParams(page?: string, limit?: string) {
-  const parsedPage = parseInt(page || "1", 10);
-  const parsedLimit = parseInt(limit || "10", 10);
+export interface PaginationParams {
+  page: number;
+  limit: number;
+  skip: number;
+}
+
+/**
+ * Utility function for pagination
+ * @param page - Page number (default: 1)
+ * @param limit - Items per page (default: 10)
+ * @returns Pagination parameters
+ */
+export function getPaginationParams(
+  page?: string | number,
+  limit?: string | number
+): PaginationParams {
+  const parsedPage = typeof page === "string" ? parseInt(page, 10) : page || 1;
+  const parsedLimit =
+    typeof limit === "string" ? parseInt(limit, 10) : limit || 10;
 
   return {
     page: parsedPage > 0 ? parsedPage : 1,
@@ -75,5 +91,38 @@ export function getPaginationParams(page?: string, limit?: string) {
     skip:
       (parsedPage > 0 ? parsedPage - 1 : 0) *
       (parsedLimit > 0 ? parsedLimit : 10),
+  };
+}
+
+/**
+ * Calculate total pages based on total items and limit
+ * @param total - Total number of items
+ * @param limit - Items per page
+ * @returns Total number of pages
+ */
+export function calculateTotalPages(total: number, limit: number): number {
+  return Math.ceil(total / limit);
+}
+
+/**
+ * Create paginated response object
+ * @param data - Array of items
+ * @param total - Total number of items
+ * @param page - Current page number
+ * @param limit - Items per page
+ * @returns Paginated response object
+ */
+export function createPaginatedResponse<T>(
+  data: T[],
+  total: number,
+  page: number,
+  limit: number
+) {
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: calculateTotalPages(total, limit),
   };
 }
