@@ -1,3 +1,4 @@
+import { PaginatedResponse, SearchQueryParams } from "@/common/dto/common.dto";
 import { PayPeriodType, Role } from "@prisma/client";
 
 /**
@@ -59,10 +60,7 @@ export interface UpdateUserProfileDto {
 /**
  * Query parameters for user listing
  */
-export interface UserQueryParams {
-  page?: string;
-  limit?: string;
-  search?: string;
+export interface UserQueryParams extends SearchQueryParams {
   departmentId?: string;
   role?: Role;
   isActive?: string; // "true" or "false"
@@ -71,10 +69,4 @@ export interface UserQueryParams {
 /**
  * Response structure for paginated user lists
  */
-export interface PaginatedUserResponse {
-  data: Array<any>;
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+export type PaginatedUserResponse = PaginatedResponse<any>;
