@@ -10,6 +10,7 @@ import {
 
 // Import routes
 import authRoutes from "@/features/auth/auth.routes";
+import userRoutes from "@/features/users/users.routes";
 
 dotenv.config();
 
@@ -31,7 +32,8 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use(`/api/auth`, authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // 404 Error handler
 app.use(notFoundHandler);
