@@ -19,7 +19,6 @@ export const defaultUserSelect = {
   overtimeEnabled: true,
   createdAt: true,
   updatedAt: true,
-  // password: false, - 명시적으로 제외하지 않아도 됨 (선택되지 않은 필드는 자동으로 제외됨)
 } as const;
 
 /**
