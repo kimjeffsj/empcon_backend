@@ -13,6 +13,7 @@ import authRoutes from "@/features/auth/auth.routes";
 import userRoutes from "@/features/users/users.routes";
 import departmentRoutes from "@/features/departments/departments.routes";
 import positionRoutes from "@/features/positions/positions.routes";
+import scheduleRoutes from "@/features/schedules/schedules.routes";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/positions", positionRoutes);
+app.use("/api/schedules", scheduleRoutes);
 
 // 404 Error handler
 app.use(notFoundHandler);
