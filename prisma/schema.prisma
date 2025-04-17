@@ -210,16 +210,18 @@ model LeaveType {
   requests        LeaveRequest[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  LeaveBalance    LeaveBalance[]
 }
 
 model LeaveBalance {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String // employee ID
+  leaveType   LeaveType @relation(fields: [leaveTypeId], references: [id])
   leaveTypeId String // leave type ID
   balanceDays Float // remaining days
   year        Int // year
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model LeaveRequest {
