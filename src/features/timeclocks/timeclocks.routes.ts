@@ -52,7 +52,7 @@ router.delete(
 
 // Get active time clock for user
 router.get(
-  "/user/active/:userId?",
+  "/user/active/:userId",
   timeClocksController.findActiveByUser.bind(timeClocksController)
 );
 

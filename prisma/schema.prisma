@@ -29,6 +29,7 @@ model User {
   payRate            Float? // hourly wage
   payPeriodType      PayPeriodType? // pay period type
   overtimeEnabled    Boolean             @default(true) // whether overtime premium applies
+  payCalculations    PayCalculation[]
   schedules          Schedule[]
   timeClocks         TimeClock[]
   leaveRequests      LeaveRequest[]
@@ -174,6 +175,7 @@ model PayCalculation {
   id            String          @id @default(uuid())
   payPeriod     PayPeriod       @relation(fields: [payPeriodId], references: [id])
   payPeriodId   String
+  user          User            @relation(fields: [userId], references: [id])
   userId        String // employee ID
   regularHours  Float
   overtimeHours Float
