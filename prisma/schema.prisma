@@ -199,13 +199,17 @@ model PayAdjustment {
 
 // Leave related models
 model LeaveType {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  paidLeave   Boolean        @default(true)
-  requests    LeaveRequest[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  paidLeave       Boolean        @default(true)
+  requiresBalance Boolean        @default(true)
+  defaultDays     Float?
+  allowsCarryOver Boolean        @default(false)
+  allowsPayout    Boolean        @default(false)
+  requests        LeaveRequest[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model LeaveBalance {
@@ -227,6 +231,7 @@ model LeaveRequest {
   startDate   DateTime
   endDate     DateTime
   totalDays   Float
+  halfDay     Boolean            @default(false)
   status      LeaveRequestStatus @default(PENDING)
   notes       String?
   approvedBy  String? // manager ID who approved

@@ -6,10 +6,10 @@ export interface BaseLeaveTypeDto {
   name: string;
   description?: string;
   paidLeave: boolean;
-  requiresBalance: boolean; // managing leave balance on/off
-  defaultDays?: number; // Default allocated days (used when requiresBalance is true)
-  allowsCarryOver?: boolean; // Whether unused leave can be carried over to the next year
-  allowsPayout?: boolean; // Whether leave can be paid out as compensation
+  requiresBalance: boolean; // 잔액 관리 on/off용 플래그
+  defaultDays?: number; // 기본 부여 일수 (requiresBalance가 true일 때 사용)
+  allowsCarryOver?: boolean; // 미사용 휴가 이월 허용 여부
+  allowsPayout?: boolean; // 휴가 수당 지급 허용 여부
 }
 
 export interface CreateLeaveTypeDto extends BaseLeaveTypeDto {}
@@ -33,9 +33,9 @@ export interface UpdateLeaveBalanceDto extends Partial<BaseLeaveBalanceDto> {}
 export interface AdjustLeaveBalanceDto {
   userId: string;
   leaveTypeId: string;
-  days: number; // Positive: increase, Negative: decrease
+  days: number; // 양수: 증가, 음수: 감소
   reason: string;
-  year?: number; // If not specified, the current year
+  year?: number; // 지정하지 않으면 현재 연도
 }
 
 export interface LeaveBalanceQueryParams extends SearchQueryParams {
