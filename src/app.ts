@@ -14,6 +14,7 @@ import userRoutes from "@/features/users/users.routes";
 import departmentRoutes from "@/features/departments/departments.routes";
 import positionRoutes from "@/features/positions/positions.routes";
 import scheduleRoutes from "@/features/schedules/schedules.routes";
+import timeClockRoutes from "@/features/timeclocks/timeclocks.routes";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/positions", positionRoutes);
 app.use("/api/schedules", scheduleRoutes);
+app.use("/api/timeclocks", timeClockRoutes);
 
 // 404 Error handler
 app.use(notFoundHandler);
