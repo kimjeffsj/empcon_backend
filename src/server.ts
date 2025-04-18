@@ -1,8 +1,16 @@
 import app from "./app";
+import http from "http";
 import { logger } from "./common/utils/logger.utils";
 import { appConfig } from "./config/app.config";
+import { initSocketService } from "./socket/socket.service";
 
 const PORT = appConfig.port;
+
+// HTTP server
+const server = http.createServer(app);
+
+// Socket.io initialize
+initSocketService(server);
 
 // Start Server
 app.listen(PORT, () => {

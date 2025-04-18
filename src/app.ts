@@ -18,6 +18,7 @@ import timeClockRoutes from "@/features/timeclocks/timeclocks.routes";
 import holidaysRoutes from "@/features/holidays/holidays.routes";
 import payrollRoutes from "@/features/payroll/payroll.routes";
 import leavesRoutes from "@/features/leaves/leaves.routes";
+import notificationsRoutes from "@/features/notifications/notifications.routes";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use("/api/timeclocks", timeClockRoutes);
 app.use("/api/holidays", holidaysRoutes);
 app.use("/api/payroll", payrollRoutes);
 app.use("/api/leaves", leavesRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 // 404 Error handler
 app.use(notFoundHandler);

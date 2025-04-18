@@ -7,7 +7,11 @@ import {
 } from "./dto/reset-password.dto";
 import prisma from "../../entities/prisma";
 import { appConfig } from "../../config/app.config";
-import { ApiError } from "../../common/middleware/error.middleware";
+import {
+  ApiError,
+  NotFoundError,
+  UnauthorizedError,
+} from "../../common/middleware/error.middleware";
 import { excludePassword } from "@/common/utils/helpers.utils";
 import { logger } from "@/common/utils/logger.utils";
 import { StringValue } from "ms";
@@ -24,7 +28,7 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new ApiError(401, "Invalid credentials");
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     const token = this.generateToken(user.id, user.role);
@@ -54,7 +58,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new ApiError(404, "User not found");
+        throw new NotFoundError("User not found");
       }
 
       const newToken = this.generateToken(user.id, user.role);

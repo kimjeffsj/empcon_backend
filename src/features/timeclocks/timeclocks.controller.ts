@@ -6,6 +6,7 @@ import {
   UpdateTimeClockDto,
 } from "./dto/timeclock.dto";
 import { logger } from "@/common/utils/logger.utils";
+import { ValidationError } from "@/common/middleware/error.middleware";
 
 export class TimeClocksController {
   /**
@@ -136,11 +137,7 @@ export class TimeClocksController {
       const userId = req.params.userId || (req.user ? req.user.userId : null);
 
       if (!userId) {
-        res.status(400).json({
-          success: false,
-          message: "User ID is required",
-        });
-        return;
+        throw new ValidationError("User ID is required");
       }
 
       const timeClock = await timeClocksService.findActiveByUser(userId);
